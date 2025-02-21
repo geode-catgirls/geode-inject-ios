@@ -35,7 +35,7 @@ jobs:
 
       - name: Create Download Header file.
         run: |
-          echo "#define GEODE_DOWNLOAD_URL @\"{{ secrets.DOWNLOAD_LINK }}\"" > geode_download.h
+          echo "#define GEODE_DOWNLOAD_URL @\"${{ secrets.DOWNLOAD_LINK }}\"" > geode_download.h
           
       - name: Build
         run: |

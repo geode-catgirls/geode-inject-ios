@@ -12,18 +12,18 @@ __attribute__((constructor)) static void entry(int argc, char **argv, char *envp
 	    NSLog(@"mrow exiting");
             ptrace(0, 0, 0, 0);
             exit(0);
-        } else {
+    } else {
 	    NSLog(@"mrow crac");
-            pid_t pid;
-            char *modified_argv[] = {argv[0], "--jit", NULL };
-            int ret = posix_spawnp(&pid, argv[0], NULL, NULL, modified_argv, envp);
-            if (ret == 0) {
-                waitpid(pid, NULL, WUNTRACED);
-                ptrace(11, pid, 0, 0);
-                kill(pid, SIGTERM);
-                wait(NULL);
-            }
+        pid_t pid;
+        char *modified_argv[] = {argv[0], "--jit", NULL };
+        int ret = posix_spawnp(&pid, argv[0], NULL, NULL, modified_argv, envp);
+        if (ret == 0) {
+            waitpid(pid, NULL, WUNTRACED);
+            ptrace(11, pid, 0, 0);
+            kill(pid, SIGTERM);
+            wait(NULL);
         }
+    }
     init_bypassDyldLibValidation();
     init_fixCydiaSubstrate();
 

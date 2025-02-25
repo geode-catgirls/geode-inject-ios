@@ -1,8 +1,8 @@
 #include <dlfcn.h>
 #include <Foundation/Foundation.h>
 
-#if __has_include("geode_download.h")
-#include "geode_download.h"
+#if __has_include("./../geode_download.h")
+#include "./../geode_download.h"
 #else
 #warning geode_download.h not found - create a file called geode_download.h with the following content:
 #warning #define GEODE_DOWNLOAD_URL @"https://your-url-to-download/Geode.ios.dylib"

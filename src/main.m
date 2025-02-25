@@ -1,6 +1,6 @@
 #import <spawn.h>
 #import <dlfcn.h>
-#import "utils.h"
+#import "utils/utils.h"
 
 extern char** environ;
 int ptrace(int, pid_t, caddr_t, int);

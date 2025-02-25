@@ -83,4 +83,9 @@ void init_loadGeode(void) {
 	NSLog(@"mrow trying to load Geode library from %@", geode_lib);
 
 	dlopen([geode_lib UTF8String], RTLD_LAZY);
+
+	NSLog(@"mrow inhibiting screen sleep (in 1s)");
+	[NSTimer scheduledTimerWithTimeInterval:1.0 repeats:NO block:^(NSTimer* meow) {
+		[UIApplication sharedApplication].idleTimerDisabled = YES;
+	}];
 }

@@ -6,32 +6,43 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: macos-15
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
 
-      - name: Checkout theos/theos
-        uses: actions/checkout@main
-        with:
-          repository: theos/theos
-          ref: master
-          submodules: recursive
-          path: theos
+      - name: Install Theos
+        run: |
+          # uncomment for swift
+          #sudo apt-get install -y libtinfo6
 
-      - name: Checkout theos/sdks
-        uses: actions/checkout@main
-        with:
-          repository: theos/sdks
-          ref: master
-          sparse-checkout: iPhoneOS16.5.sdk
-          path: theos/sdks
+          echo "installing theos"
+          export THEOS=$(mktemp -d theos.XXXXX)
+          echo "THEOS=$THEOS" >> $GITHUB_ENV
 
-      - name: Ensure main utils are installed
-        uses: dhinakg/procursus-action@main
-        with:
-          packages: coreutils make xz ldid
+          # set architecture for the download urls below
+          export ARCH=$(uname -m)
+
+          # depth=1 for SPEED
+          git clone --recursive https://github.com/theos/theos.git $THEOS --depth=1
+
+          # uncomment for swift
+          #curl -sL https://github.com/kabiroberai/swift-toolchain-linux/releases/download/v2.3.0/swift-5.8-ubuntu20.04.tar.xz | tar -xJvf - -C $THEOS/toolchain/
+
+          echo "downloading llvm toolchain"
+          curl -sL https://github.com/L1ghtmann/llvm-project/releases/latest/download/iOSToolchain-$ARCH.tar.xz | tar -xJvf - -C $THEOS/toolchain/
+
+          # yoinked from theos install script
+          if [[ -x $THEOS/toolchain/linux/iphone/bin/clang ]]; then
+            echo "Successfully installed the toolchain!"
+          else
+            echo "Something appears to have gone wrong -- the toolchain is not accessible. Please try again."
+            exit 7
+          fi
+
+          echo "installing sdk !!"
+          $THEOS/bin/install-sdk iPhoneOS14.5 
 
       - name: Create Download Header file.
         run: |
@@ -39,12 +50,10 @@ jobs:
           
       - name: Build
         run: |
-          export THEOS=theos
-
-          git submodule init
-          git submodule update
-          gmake package FINALPACKAGE=1 STRIP=0
-          gmake package FINALPACKAGE=1 STRIP=0 THEOS_PACKAGE_SCHEME=rootless
+          git submodule update --init --recursive
+          make package FINALPACKAGE=1 STRIP=0
+          # always clean before building rootless package !!
+          make clean package FINALPACKAGE=1 STRIP=0 THEOS_PACKAGE_SCHEME=rootless
 
       - name: Upload artifact
         uses: actions/upload-artifact@main

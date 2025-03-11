@@ -1,6 +1,6 @@
 Package: gay.rooot.geodeinject
 Name: Geode
-Version: 0.0.2
+Version: 0.0.3
 Architecture: iphoneos-arm
 Description: Injects Geode into Geometry Dash.
 Maintainer: rooot

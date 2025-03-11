@@ -1,0 +1,16 @@
+---
+AccessModifierOffset: "0"
+ColumnLimit: "180"
+IncludeIsMainRegex: "0"
+IndentWidth: "4"
+ObjCBlockIndentWidth: "4"
+PointerAlignment: Left
+SpaceBeforeAssignmentOperators: "true"
+SpaceBeforeParens: ControlStatements
+Cpp11BracedListStyle: false
+TabWidth: "4"
+UseTab: Always
+AllowShortBlocksOnASingleLine: Always
+IncludeBlocks: Preserve
+LineEnding: LF
+ObjCBreakBeforeNestedBlockParam: false

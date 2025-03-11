@@ -1,6 +1,8 @@
 #include <dlfcn.h>
 #include <Foundation/Foundation.h>
 
+#include <stdlib.h>
+
 #if __has_include("./../geode_download.h")
 #include "./../geode_download.h"
 #else
@@ -39,6 +41,7 @@ void init_loadGeode(void) {
 
 	NSString *geode_dir = [applicationSupportDirectory stringByAppendingString:@"/GeometryDash/game/geode"];
 	NSString *geode_lib = [geode_dir stringByAppendingString:@"/Geode.ios.dylib"];
+	NSString *geode_env = [geode_dir stringByAppendingString:@"/geode.env"];
 
 	bool is_dir;
 	NSFileManager *fm = [NSFileManager defaultManager];
@@ -78,6 +81,38 @@ void init_loadGeode(void) {
 			}
 		}];
 		[downloadTask resume];
+	}
+
+	if ([fm fileExistsAtPath:geode_env]) {
+		NSLog(@"mrow loading geode launch arguments from %@", geode_env);
+		NSString* envContent = [NSString stringWithContentsOfFile:geode_env encoding:NSUTF8StringEncoding error:nil];
+		if (envContent) {
+			NSArray* lines = [envContent componentsSeparatedByString:@"\n"];
+			for (NSString* envDef in lines) {
+				NSArray* parts = [envDef componentsSeparatedByString:@"="];
+				if (parts.count < 2 || [envDef hasPrefix:@"#"]) {
+					NSLog(@"mrow: skipping invalid env line %@", envDef);
+					continue;
+				}
+
+				NSString* key = parts[0];
+				NSString* val = [[parts subarrayWithRange:NSMakeRange(1, parts.count-1)] componentsJoinedByString:@"="];
+				if ([val hasPrefix:@"\""] && [val hasSuffix:@"\""]) {
+					val = [[val substringToIndex:[val length] - 1] substringFromIndex:1];
+					NSLog(@"mrow stripped quotes from env val: %@", val);
+				}
+
+				NSLog(@"mrow setting env %@ to %@", key, val);
+				setenv([key UTF8String], [val UTF8String], 1);
+			}
+		}
+
+		NSLog(@"mrow deleting temporary geode env file at %@", geode_env);
+		NSError* removeError;
+		[fm removeItemAtPath:geode_env error:&removeError];
+		if (removeError) {
+			NSLog(@"mrow failed to delete: %@", removeError);
+		}
 	}
 
 	NSLog(@"mrow trying to load Geode library from %@", geode_lib);

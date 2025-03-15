@@ -56,6 +56,8 @@ void init_loadGeode(void) {
 	NSLog(@"mrow geode dir: %@", geode_dir);
 	NSLog(@"mrow Geode lib path: %@", geode_lib);
 
+	setenv("GEODEINJECT_LOADED", "1", 1); 
+
 	bool geode_exists = [fm fileExistsAtPath:geode_lib];
 
 	if (!geode_exists) {

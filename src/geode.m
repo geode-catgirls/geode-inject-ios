@@ -15,21 +15,21 @@
 
 // what the actual fuck is this entire function.
 // no like seriously who tf came up with objc and the ios sdk
-void showAlert(NSString* tiddies, NSString* meows, bool remeowbutton) {
+void showAlert(NSString* title, NSString* msg, bool showRestartButton) {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		UIViewController* currentFucker = [[[UIApplication sharedApplication] windows].firstObject rootViewController];
+		UIViewController* view = [[[UIApplication sharedApplication] windows].firstObject rootViewController];
 
-		UIAlertController* alert = [UIAlertController alertControllerWithTitle:tiddies message:meows preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertController* alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
 
 		UIAlertAction* fuckoff = [UIAlertAction actionWithTitle:@"go away" style:UIAlertActionStyleDefault handler:nil];
 		[alert addAction:fuckoff];
 
-		if (remeowbutton) {
+		if (showRestartButton) {
 			UIAlertAction* restart = [UIAlertAction actionWithTitle:@"restart" style:UIAlertActionStyleDefault handler:^(UIAlertAction* _) { exit(0); }];
 			[alert addAction:restart];
 		}
 
-		[currentFucker presentViewController:alert animated:YES completion:nil];
+		[view presentViewController:alert animated:YES completion:nil];
 	});
 }
 

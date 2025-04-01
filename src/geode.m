@@ -3,14 +3,6 @@
 
 #include <stdlib.h>
 
-#if __has_include("./../geode_download.h")
-#include "./../geode_download.h"
-#else
-#warning geode_download.h not found - create a file called geode_download.h with the following content:
-#warning #define GEODE_DOWNLOAD_URL @"https://your-url-to-download/Geode.ios.dylib"
-#error aborting compilation - see info above
-#endif
-
 #import <UIKit/UIKit.h>
 
 // what the actual fuck is this entire function.
@@ -61,28 +53,9 @@ void init_loadGeode(void) {
 	bool geode_exists = [fm fileExistsAtPath:geode_lib];
 
 	if (!geode_exists) {
-		NSLog(@"mrow geode dylib DOES NOT EXIST! downloading...");
-		NSURL* url = [NSURL URLWithString:GEODE_DOWNLOAD_URL];
-		NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-		NSURLSession* session = [NSURLSession sessionWithConfiguration:configuration];
-
-		NSURLSessionDownloadTask* downloadTask = [session downloadTaskWithURL:url completionHandler:^(NSURL* location, NSURLResponse* response, NSError* error) {
-			if (error) {
-				showAlert(@"error", @"waaaaaaaa", false);
-				NSLog(@"mrow FAILED to download Geode: %@", error);
-			} else {
-				// NSFileManager *fileManager = [NSFileManager defaultManager];
-				NSError* moveError = nil;
-				if ([fm moveItemAtURL:location toURL:[NSURL fileURLWithPath:geode_lib] error:&moveError]) {
-					NSLog(@"mrow SUCCESS - downloaded Geode!");
-					showAlert(@"Downloaded Geode", @"Successfully downloaded Geode.ios.dylib\nRestart the game to use Geode.", true);
-				} else {
-					showAlert(@"Geode Error", @"failed to download Geode: failed to save file", false);
-					NSLog(@"mrow FAILED to download Geode: failed to save file: %@", moveError);
-				}
-			}
-		}];
-		[downloadTask resume];
+		NSLog(@"mrow failed to load geode dylib: file does not exist");
+		showAlert(@"Geode Error", [NSString stringWithFormat:@"failed to load Geode: could not find %@", geode_lib], false);
+		return;
 	}
 
 	if ([fm fileExistsAtPath:geode_env]) {

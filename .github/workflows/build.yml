@@ -43,10 +43,6 @@ jobs:
 
           echo "installing sdk !!"
           $THEOS/bin/install-sdk iPhoneOS14.5 
-
-      - name: Create Download Header file.
-        run: |
-          echo "#define GEODE_DOWNLOAD_URL @\"${{ secrets.DOWNLOAD_LINK }}\"" > geode_download.h
           
       - name: Build
         run: |

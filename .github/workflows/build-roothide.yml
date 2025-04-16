@@ -1,0 +1,57 @@
+name: Build Roothide
+
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Theos
+        run: |
+          # we dont want any clashing with envs so...
+          # uncomment for swift
+          #sudo apt-get install -y libtinfo6
+
+          echo "installing theos"
+          export THEOS=$(mktemp -d theos.XXXXX)
+          echo "THEOS=$THEOS" >> $GITHUB_ENV
+
+          # set architecture for the download urls below
+          export ARCH=$(uname -m)
+
+          # depth=1 for SPEED
+          git clone --recursive https://github.com/roothide/theos.git $THEOS --depth=1
+
+          # uncomment for swift
+          #curl -sL https://github.com/kabiroberai/swift-toolchain-linux/releases/download/v2.3.0/swift-5.8-ubuntu20.04.tar.xz | tar -xJvf - -C $THEOS/toolchain/
+
+          echo "downloading llvm toolchain"
+          curl -sL https://github.com/L1ghtmann/llvm-project/releases/latest/download/iOSToolchain-$ARCH.tar.xz | tar -xJvf - -C $THEOS/toolchain/
+
+          # yoinked from theos install script
+          if [[ -x $THEOS/toolchain/linux/iphone/bin/clang ]]; then
+            echo "Successfully installed the toolchain!"
+          else
+            echo "Something appears to have gone wrong -- the toolchain is not accessible. Please try again."
+            exit 7
+          fi
+
+          echo "installing sdk !!"
+          $THEOS/bin/install-sdk iPhoneOS14.5 
+          
+      - name: Build
+        run: |
+          git submodule update --init --recursive
+          make package FINALPACKAGE=1 STRIP=0 THEOS_PACKAGE_SCHEME=roothide
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: packages
+          path: packages/*.deb

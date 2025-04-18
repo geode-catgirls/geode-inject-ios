@@ -5,3 +5,7 @@ packages/
 # contains download url for Geode.ios.dylib
 # temporary placeholder until release or GH actions
 geode_download.h
+
+compile_commands.json
+build.sh
+.cache/

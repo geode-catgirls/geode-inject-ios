@@ -5,7 +5,7 @@
 const char** _CFGetProgname(void);
 const char** _CFGetProcessPath(void);
 int _NSGetExecutablePath(char* buf, uint32_t* bufsize);
-struct dyld_all_image_infos* _alt_dyld_get_all_image_infos();
+//struct dyld_all_image_infos* _alt_dyld_get_all_image_infos();
 const char* LCHomePath();
 
 #define CS_DEBUGGED 0x10000000

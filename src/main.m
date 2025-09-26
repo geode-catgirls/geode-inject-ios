@@ -10,7 +10,7 @@ int ptrace(int, pid_t, caddr_t, int);
 - (BOOL)mrow_application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
 	NSLog(@"mrow call didFinishLaunchingWithOptions!");
 	init_loadGeode();
-	return [self rly_application:application didFinishLaunchingWithOptions:launchOptions];
+	return [self mrow_application:application didFinishLaunchingWithOptions:launchOptions];
 }
 @end
 

@@ -1,5 +1,6 @@
 #import "utils/utils.h"
 #include <objc/runtime.h>
+#include <UIKit/UIKit.h>
 #import <dlfcn.h>
 #import <spawn.h>
 

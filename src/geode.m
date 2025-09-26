@@ -5,16 +5,16 @@
 
 #import <UIKit/UIKit.h>
 
-// what the actual fuck is this entire function.
-// no like seriously who tf came up with objc and the ios sdk
+// what is this entire function.
+// no like seriously who came up with objc and the ios sdk
 void showAlert(NSString* title, NSString* msg, bool showRestartButton) {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		UIViewController* view = [[[UIApplication sharedApplication] windows].firstObject rootViewController];
 
 		UIAlertController* alert = [UIAlertController alertControllerWithTitle:title message:msg preferredStyle:UIAlertControllerStyleAlert];
 
-		UIAlertAction* fuckoff = [UIAlertAction actionWithTitle:@"go away" style:UIAlertActionStyleDefault handler:nil];
-		[alert addAction:fuckoff];
+		UIAlertAction* goaway = [UIAlertAction actionWithTitle:@"go away" style:UIAlertActionStyleDefault handler:nil];
+		[alert addAction:goaway];
 
 		if (showRestartButton) {
 			UIAlertAction* restart = [UIAlertAction actionWithTitle:@"restart" style:UIAlertActionStyleDefault handler:^(UIAlertAction* _) { exit(0); }];
@@ -92,7 +92,7 @@ void init_loadGeode(void) {
 
 	NSLog(@"mrow trying to load Geode library from %@", geode_lib);
 
-	dlopen([geode_lib UTF8String], RTLD_LAZY);
+	dlopen([geode_lib UTF8String], RTLD_LAZY | RTLD_GLOBAL);
 
 	NSLog(@"mrow inhibiting screen sleep (in 1s)");
 	[NSTimer scheduledTimerWithTimeInterval:1.0 repeats:NO block:^(NSTimer* meow) { [UIApplication sharedApplication].idleTimerDisabled = YES; }];

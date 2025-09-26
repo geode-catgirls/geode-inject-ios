@@ -38,7 +38,7 @@ void init_loadGeode(void) {
 	bool is_dir;
 	NSFileManager* fm = [NSFileManager defaultManager];
 	NSURL* docDir = [fm URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
-	NSString* geode_lib2 = [docDir URLByAppendingPathComponent:@"Geode.ios.dylib"];
+	NSString* geode_lib2 = [docDir URLByAppendingPathComponent:@"Geode.ios.dylib"].path;
 	if (![fm fileExistsAtPath:geode_dir isDirectory:&is_dir]) {
 		NSLog(@"mrow creating geode dir !!");
 		if (![fm createDirectoryAtPath:geode_dir withIntermediateDirectories:YES attributes:nil error:NULL]) {

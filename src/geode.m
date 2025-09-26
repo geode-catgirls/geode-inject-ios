@@ -37,6 +37,8 @@ void init_loadGeode(void) {
 
 	bool is_dir;
 	NSFileManager* fm = [NSFileManager defaultManager];
+	NSURL* docDir = [fm URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
+	NSString* geode_lib2 = [docDir URLByAppendingPathComponent:@"Geode.ios.dylib"];
 	if (![fm fileExistsAtPath:geode_dir isDirectory:&is_dir]) {
 		NSLog(@"mrow creating geode dir !!");
 		if (![fm createDirectoryAtPath:geode_dir withIntermediateDirectories:YES attributes:nil error:NULL]) {
@@ -50,12 +52,20 @@ void init_loadGeode(void) {
 
 	setenv("GEODEINJECT_LOADED", "1", 1); 
 
-	bool geode_exists = [fm fileExistsAtPath:geode_lib];
+	NSString* realgeode_lib;
 
-	if (!geode_exists) {
+	bool geode_exists = [fm fileExistsAtPath:geode_lib];
+	bool geode_exists2 = [fm fileExistsAtPath:geode_lib2];
+
+	if (!geode_exists && !geode_exists2) {
 		NSLog(@"mrow failed to load geode dylib: file does not exist");
-		showAlert(@"Geode Error", [NSString stringWithFormat:@"failed to load Geode: could not find %@", geode_lib], false);
+		showAlert(@"Geode Error", [NSString stringWithFormat:@"failed to load Geode: could not find %@ and %@", geode_lib, geode_lib2], false);
 		return;
+	}
+	if (geode_exists2) {
+		realgeode_lib = geode_lib;
+	} else {
+		realgeode_lib = geode_lib2;
 	}
 
 	if ([fm fileExistsAtPath:geode_env]) {
@@ -90,9 +100,9 @@ void init_loadGeode(void) {
 		}
 	}
 
-	NSLog(@"mrow trying to load Geode library from %@", geode_lib);
+	NSLog(@"mrow trying to load Geode library from %@", realgeode_lib);
 
-	dlopen([geode_lib UTF8String], RTLD_LAZY | RTLD_GLOBAL);
+	dlopen([realgeode_lib UTF8String], RTLD_LAZY | RTLD_GLOBAL);
 
 	NSLog(@"mrow inhibiting screen sleep (in 1s)");
 	[NSTimer scheduledTimerWithTimeInterval:1.0 repeats:NO block:^(NSTimer* meow) { [UIApplication sharedApplication].idleTimerDisabled = YES; }];

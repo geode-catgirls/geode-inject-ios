@@ -149,7 +149,7 @@ static int hooked___fcntl(int fildes, int cmd, void *param) {
         return 0;
     }
     
-    // If for another command or file, pass through using direct syscall
+    // if for another command or file, pass through using direct syscall
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     return syscall(SYS_fcntl, fildes, cmd, param);

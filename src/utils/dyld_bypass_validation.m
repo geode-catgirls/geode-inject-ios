@@ -128,7 +128,11 @@ static int hooked___fcntl(int fildes, int cmd, void *param) {
         bzero(filePath, PATH_MAX);
         
         // Check if the file is our "in-memory" file
-        if (__fcntl(fildes, F_GETPATH, filePath) != -1) {
+        // Use direct syscall to avoid any recursion issues
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        if (syscall(SYS_fcntl, fildes, F_GETPATH, filePath) != -1) {
+        #pragma clang diagnostic pop
             const char *homeDir = LCHomePath();
             if (!strncmp(filePath, homeDir, strlen(homeDir))) {
                 fsignatures_t *fsig = (fsignatures_t*)param;
@@ -145,15 +149,11 @@ static int hooked___fcntl(int fildes, int cmd, void *param) {
         return 0;
     }
     
-    // If for another command or file, we pass through
-    //return __fcntl(fildes, cmd, param);
-
-    // dopamine already hooks fcntl?? so i guess we will call their func instead...
-    if (dopamineFcntlHookAddr) {
-        return dopamineFcntlHookAddr(fildes, cmd, param);
-    } else {
-        return __fcntl(fildes, cmd, param);
-    }
+    // if for another command or file, pass through using direct syscall
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    return syscall(SYS_fcntl, fildes, cmd, param);
+    #pragma clang diagnostic pop
 }
 
 /*

@@ -62,7 +62,7 @@ void init_loadGeode(void) {
 		showAlert(@"Geode Error", [NSString stringWithFormat:@"failed to load Geode: could not find %@ and %@", geode_lib, geode_lib2], false);
 		return;
 	}
-	if (geode_exists2) {
+	if (geode_exists) {
 		realgeode_lib = geode_lib;
 	} else {
 		realgeode_lib = geode_lib2;
@@ -102,7 +102,13 @@ void init_loadGeode(void) {
 
 	NSLog(@"mrow trying to load Geode library from %@", realgeode_lib);
 
-	dlopen([realgeode_lib UTF8String], RTLD_LAZY | RTLD_GLOBAL);
+	void* handle = dlopen([realgeode_lib UTF8String], RTLD_LAZY | RTLD_GLOBAL);
+	if (!handle) {
+		NSLog(@"mrow failed to dlopen Geode: %s", dlerror());
+		showAlert(@"Geode Error", [NSString stringWithFormat:@"failed to load Geode: %s", dlerror()], false);
+		return;
+	}
+	NSLog(@"mrow successfully loaded Geode!");
 
 	NSLog(@"mrow inhibiting screen sleep (in 1s)");
 	[NSTimer scheduledTimerWithTimeInterval:1.0 repeats:NO block:^(NSTimer* meow) { [UIApplication sharedApplication].idleTimerDisabled = YES; }];
